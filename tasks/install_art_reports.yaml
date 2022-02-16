@@ -43,12 +43,13 @@
           state: link
         when: art_symlink or not current_art_symlink.stat.exists
 
-      - name: Symlink ART Reports to current version
+      - name: ART Reports upgrade detection
         debug:
             msg:
-                - "Alert! Not creating symlink to current version as requested or this is an upgrade"
+                - "Alert! Not creating symlink to current version as requested and this is an upgrade"
                 - "To create execute the following command on the host:"
                 - "symlink -sfn {{ art_archive_install_path }} {{ art_install_link }}"
+                - "Or re-run job with art_symlink set to true"
         when: not art_symlink and current_art_symlink.stat.exists and current_art_symlink.stat.lnk_target != art_archive_install_path
 
 - name: Deploy ART Reports to Tomcat
