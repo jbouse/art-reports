@@ -1,8 +1,14 @@
+---
 - name: Check for tomcat on remote box
   stat:
     path: '{{ download_dir }}/{{ art_redis_filename }}'
   register: remote_art_file
   ignore_errors: yes
+
+- name: Create ART Reports home directory
+  file:
+    path: "{{ art_home_path }}"
+    state: directory
 
 - name: Download and extract ART Reports to ART home directory
   unarchive:
@@ -40,7 +46,7 @@
         when: not art_symlink
 
 - name: Create ART Reports context directories for Tomcat
-  template:
+  file:
     src: "{{ item.src }}"
     dest: "{{ tomcat_archive_install_path }}/{{ item.path | splitext | first }}"
     group: "{{ tomcat_group }}"

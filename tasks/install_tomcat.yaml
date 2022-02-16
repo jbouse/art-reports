@@ -103,7 +103,7 @@
     state: directory
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: "u=rwx,g=rx"
+    mode: "u=rwx,g=rx,o-rx"
   with_items:
     - webapps
 
