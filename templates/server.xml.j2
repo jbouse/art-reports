@@ -40,14 +40,14 @@
             <Host name="localhost" appBase="{{ tomcat_home_path }}/webapps"
                 unpackWARs="true" autoDeploy="false">
                 <Valve className="org.apache.catalina.valves.AccessLogValve"
-                    directory="logs" prefix="localhost_access" suffix=".log"
+                    directory="logs" prefix="localhost_access." suffix=".log"
                     fileDateFormat="yyyy-MM-dd.HH"
                     requestAttributesEnabled="true" showServerInfo="false"
                     pattern='%t %U %a %A %m %p %R %q %s' />
             </Host>
 
             <Valve className="org.apache.catalina.valves.AccessLogValve"
-                directory="logs" prefix="access" suffix=".log" 
+                directory="logs" prefix="access." suffix=".log" 
                 fileDateFormat="yyyy-MM-dd.HH"
                 requestAttributesEnabled="true" showServerInfo="false" 
                 pattern='%t %U %a %A %m %p %R %q %s' />
