@@ -90,6 +90,7 @@
     - logs
     - bin
 
+  # CIS v1.1.0 1.1 L2
 - name: Remove extranous files and directories | CIS 1.1
   file:
     path: "{{ tomcat_archive_install_path }}/webapps/{{ item }}"
@@ -101,30 +102,41 @@
     - manager
     - ROOT
 
+  # CIS v1.1.0 4.1 L1
 - name: Restrict access to $CATALINA_HOME directory
   file:
     path: "{{ catalina_home_dir }}"
     state: directory
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: "u=rwx,g=rx,o-rx"
+    mode: "g-w,o-rwx"
 
 - name: Restrict access to $CATALINA_HOME/conf/ files
   file:
-    path: "{{ catalina_home_dir }}/conf/{{ item }}"
+    path: "{{ catalina_home_dir }}/conf/{{ item.path }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: "u+r-w,g-rwx,o-rwx"
+    mode: "{{ item.mode | default('u-w,g-rwx,o-rwx') }}"
   with_items:
-    - catalina.properties
-    - catalina.policy
-    - context.xml
-    - logging.properties
-    - server.xml
-    - tomcat-users.xml
-    - web.xml
-    - jaspic-providers.xml
+    # CIS v1.1.0 4.8 L1
+    - path: catalina.properties
+    # CIS v1.1.0 4.9 L1
+    - path: catalina.policy
+    # CIS v1.1.0 4.10 L1
+    - path: context.xml
+    # CIS v1.1.0 4.11 L1
+    - path: logging.properties
+    # CIS v1.1.0 4.12 L1
+    - path: server.xml
+    # CIS v1.1.0 4.13 L1
+    - path: tomcat-users.xml
+    # CIS v1.1.0 4.14 L1
+    - path: web.xml
+      mode: u-wx,g-rwx,o-rwx
+    # CIS v1.1.0 4.15 L1
+    - path: jaspic-providers.xml
 
+  # CIS v1.1.0 4.7 L1
 - name: Make the tomcat user the owner of $CATALINA_BASE directories
   file:
     path: "{{ tomcat_home_path }}/{{ item }}"
@@ -135,21 +147,14 @@
   with_items:
     - webapps
 
-# - name: Grant Tomcat group read access to the conf directory
-#   file:
-#     path: "{{ tomcat_archive_install_path }}/conf"
-#     state: directory
-#     # mode: 'u=rwx,g=rwx,o=rwx'
-#     mode: "g+r"
-#     recurse: true
-
+  # CIS v1.1.0 4.3 L1
 - name: Grant Tomcat group execute access to the conf directory itself
   file:
     path: "{{ tomcat_archive_install_path }}/conf"
     owner: "{{ tomcat_user }}"
     state: directory
     # mode: 'u=rwx,g=rwx,o=rwx'
-    mode: "g+x"
+    mode: "g-w,o-rwx"
 
 - name: Create bin/setenv.sh
   template:
