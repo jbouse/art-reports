@@ -22,13 +22,22 @@
     creates: "{{ art_archive_install_path }}"
   when: remote_art_file.stat.exists
 
-- name: Symlink ART Rerpots to current version
-  file:
-    src: "{{ art_archive_install_path }}"
-    dest: "{{ art_install_link }}"
-    state: link
-  when:
-    - art_symlink
+- name: Create symlink to current version of ART Reports
+  block:
+      - name: Symlink ART Rerpots to current version
+        file:
+          src: "{{ art_archive_install_path }}"
+          dest: "{{ art_install_link }}"
+          state: link
+        when: art_symlink
+
+      - name: Symlink ART Rerpots to current version
+        debug:
+            msg:
+                - "Alert! Not creating symlink to current version as requested"
+                - "To create execute the following command on the host:"
+                - "symlink -sfn {{ art_archive_install_path }} {{ art_install_link }}"
+        when: not art_symlink
 
 - name: Create ART Reports context directories for Tomcat
   template:
