@@ -1,0 +1,10 @@
+---
+- name: Find $CATALINA_HOME directory
+  shell: cat /etc/systemd/system/tomcat.service | grep "CATALINA_HOME" | cut -f3 -d= | tr -d '"'
+  changed_when: false
+  register: catalina_find_home_dir
+
+- name: Install Tomcat
+  include_tasks: install_tomcat.yaml
+  when:
+    - tcat_install

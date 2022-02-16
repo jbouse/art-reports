@@ -1,0 +1,65 @@
+- name: Check for tomcat on remote box
+  stat:
+    path: '{{ download_dir }}/{{ art_redis_filename }}'
+  register: remote_art_file
+  ignore_errors: yes
+
+- name: Download and extract Tomcat to tomcat home directory
+  unarchive:
+    src: "{{ art_archive_url }}/{{ art_archive_name }}{{ art_archive_name_ext }}"
+    dest: "{{ tomcat_home_path }}"
+    remote_src: true
+    group: "{{ tomcat_group }}"
+    creates: "{{ art_archive_install_path }}"
+  when: not remote_art_file.stat.exists
+
+- name: Extract local ART Reports
+  unarchive:
+    src: "{{ download_dir }}/{{ art_redis_filename }}"
+    dest: "{{ art_home_path }}"
+    remote_src: true
+    group: "{{ tomcat_group }}"
+    creates: "{{ art_archive_install_path }}"
+  when: remote_art_file.stat.exists
+
+- name: Symlink ART Rerpots to current version
+  file:
+    src: "{{ art_archive_install_path }}"
+    dest: "{{ art_install_link }}"
+    state: link
+  when:
+    - art_symlink
+
+- name: Create ART Reports context file for Tomcat
+  template:
+    src: art.xml.j2
+    dest: "{{ tomcat_archive_install_path }}/conf/Catalina/localhost/art.xml"
+    group: "{{ tomcat_group }}"
+
+- name: Copy Local ART Reports
+  block:
+    - name: check for ART Reports on local box
+      stat:
+        path: '{{ local_archive_dir }}/{{ art_redis_filename }}'
+      delegate_to: localhost
+      register: art_local_file
+      ignore_errors: yes
+      become: no
+      when: use_local_archive
+
+    - name: create download directory
+      file:
+        state: directory
+        mode: 'u=rwx,go=rx'
+        dest: '{{ download_dir }}'
+      when: use_local_archive
+
+    - name: copy ART Reports from local box
+      copy:
+        src: '{{ local_archive_dir }}/{{ art_redis_filename }}'
+        dest: '{{ download_dir }}/{{ art_redis_filename }}'
+        mode: 'u=rw,go=r'
+      when: use_local_archive and art_local_file.stat.exists
+  when:
+    - use_local_archive
+    - art_redis_filename not in (None, '', omit)
