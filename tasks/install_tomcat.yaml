@@ -120,7 +120,7 @@
     path: "{{ tomcat_archive_install_path }}/conf"
     state: directory
     # mode: 'u=rwx,g=rwx,o=rwx'
-    mode: "g+x"
+    mode: "g+xw"
 
 - name: Create tomcat-users.xml
   template:
