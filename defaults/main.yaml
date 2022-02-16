@@ -47,6 +47,8 @@ tomcat_roles:
   - manager-status
 tomcat_users: []
 
+catalina_home_dir: "{{ catalina_find_home_dir.stdout }}"
+
 # System variables not related to installing Tomcat 
 # Directory to store files downloaded for Java installation on the remote box
 download_dir: "{{ x_ansible_download_dir | default(ansible_env.HOME + '/.ansible/tmp/downloads') }}"

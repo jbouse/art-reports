@@ -41,7 +41,7 @@
   block:
       - name: Install Java - RHEL
         yum:
-            name: java-1.8.0-openjdk
+            name: java-1.8.0-openjdk java-1.8.0-openjdk-devel 
             state: present
         when: ansible_distribution_file_variety == "RedHat"
 
@@ -75,18 +75,20 @@
     creates: "{{ tomcat_archive_install_path }}"
   when: remote_tomcat_file.stat.exists
 
-- name: Make the tomcat user the owner of the work, temp, and logs directories
+- name: Make the tomcat user the owner of directories
   file:
     path: "{{ tomcat_archive_install_path }}/{{ item }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     recurse: true
   with_items:
+    - webapps
     - work
     - temp
     - logs
+    - bin
 
-- name: Remove docs, examples, ROOT, host-manager, and manager directories from webapps
+- name: Remove extranous files and directories | CIS 1.1
   file:
     path: "{{ tomcat_archive_install_path }}/webapps/{{ item }}"
     state: absent
@@ -97,15 +99,37 @@
     - manager
     - ROOT
 
-- name: Make the tomcat user the owner of the webapps directory
+- name: Restrict access to $CATALINA_HOME directory
   file:
-    path: "{{ tomcat_home_path }}/{{ item }}"
+    path: "{{ catalina_home_dir }}"
     state: directory
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     mode: "u=rwx,g=rx,o-rx"
+
+- name: Restrict access to $CATALINA_HOME/conf/ files
+  file:
+    path: "{{ catalina_home_dir }}/conf/{{ item }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "u=rw,g-rwx,o-rwx"
   with_items:
-    - webapps
+    - catalina.properties
+    - catalina.policy
+    - context.xml
+    - logging.properties
+    - server.xml
+    - tomcat-users.xml
+    - web.xml
+    - jaspic-providers.xml
+
+- name: Make the tomcat user the owner of the webapps directory
+  file:
+    path: "{{ tomcat_home_path }}/webapps"
+    state: directory
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "u=rwx,g=rx,o-rx"
 
 - name: Grant Tomcat group read access to the conf directory
   file:
@@ -118,9 +142,18 @@
 - name: Grant Tomcat group execute access to the conf directory itself
   file:
     path: "{{ tomcat_archive_install_path }}/conf"
+    owner: "{{ tomcat_user }}"
     state: directory
     # mode: 'u=rwx,g=rwx,o=rwx'
-    mode: "g+xw"
+    mode: "g+x"
+
+- name: Create bin/setenv.sh
+  template:
+    src: bin/setenv.sh.j2
+    dest: "{{ tomcat_archive_install_path }}/bin/setenv.sh"
+    group: "{{ tomcat_group }}"
+    mode: "g+rx,o-rx"
+  notify: restart tomcat
 
 - name: Create tomcat-users.xml
   template:
