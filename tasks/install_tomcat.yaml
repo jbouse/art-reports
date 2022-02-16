@@ -151,7 +151,7 @@
 
 - name: Create bin/setenv.sh
   template:
-    src: bin/setenv.sh.j2
+    src: setenv.sh.j2
     dest: "{{ tomcat_archive_install_path }}/bin/setenv.sh"
     group: "{{ tomcat_group }}"
     mode: "g+rx,o-rx"
