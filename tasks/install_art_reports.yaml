@@ -51,21 +51,11 @@
                 - "symlink -sfn {{ art_archive_install_path }} {{ art_install_link }}"
         when: not art_symlink and current_art_symlink.stat.exists
 
-# - name: Create ART Reports context directories for Tomcat
-#   file:
-#     src: "{{ item.src }}"
-#     dest: "{{ tomcat_archive_install_path }}/{{ item.path | splitext | first }}"
-#     group: "{{ tomcat_group }}"
-#   with_filetree: files/
-#   when: item.state == 'directory'
-
-# - name: Create ART Reports context file for Tomcat
-#   template:
-#     src: "{{ item.src }}"
-#     dest: "{{ tomcat_archive_install_path }}/{{ item.path | splitext | first }}"
-#     group: "{{ tomcat_group }}"
-#   with_filetree: files/
-#   when: item.state == 'file'
+- name: Deploy ART Reports to Tomcat
+  file:
+    src: "{{ art_install_link }}/art.war"
+    dest: "{{ tomcat_home_path }}/webapps/art.war"
+    state: link
 
 - name: Copy Local ART Reports
   block:
