@@ -30,20 +30,26 @@
 
 - name: Create symlink to current version of ART Reports
   block:
+      - name: Check for current symlink
+        stat:
+          path: "{{ art_install_link }}"
+        register: current_art_symlink
+        ignore_errors: yes
+
       - name: Symlink ART Rerpots to current version
         file:
           src: "{{ art_archive_install_path }}"
           dest: "{{ art_install_link }}"
           state: link
-        when: art_symlink
+        when: art_symlink or not current_art_symlink.stat.exists
 
       - name: Symlink ART Rerpots to current version
         debug:
             msg:
-                - "Alert! Not creating symlink to current version as requested"
+                - "Alert! Not creating symlink to current version as requested or this is an upgrade"
                 - "To create execute the following command on the host:"
                 - "symlink -sfn {{ art_archive_install_path }} {{ art_install_link }}"
-        when: not art_symlink
+        when: not art_symlink or current_art_symlink.stat.exists
 
 # - name: Create ART Reports context directories for Tomcat
 #   file:
