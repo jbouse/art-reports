@@ -86,11 +86,13 @@
     - temp
     - logs
 
-- name: Remove ROOT, host-manager, and manager directories from webapps
+- name: Remove docs, examples, ROOT, host-manager, and manager directories from webapps
   file:
     path: "{{ tomcat_archive_install_path }}/webapps/{{ item }}"
     state: absent
   with_items:
+    - docs
+    - examples
     - host-manager
     - manager
     - ROOT
@@ -98,6 +100,7 @@
 - name: Make the tomcat user the owner of the webapps directory
   file:
     path: "{{ tomcat_home_path }}/{{ item }}"
+    state: directory
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     mode: "u=rwx,g=rx"
