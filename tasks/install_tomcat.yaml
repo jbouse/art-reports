@@ -127,7 +127,7 @@
 
 - name: Make the tomcat user the owner of $CATALINA_BASE directories
   file:
-    path: "{{ tomcat_home_path }}/{{ items }}"
+    path: "{{ tomcat_home_path }}/{{ item }}"
     state: directory
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
