@@ -59,7 +59,7 @@
 
 - name: Download and extract Tomcat to tomcat home directory
   unarchive:
-    src: "{{ tomcat_archive_url }}/{{ tomcat_archive_name }}{{ tomcat_archive_name_ext }}"
+    src: "{{ tomcat_archive_url }}{{ tomcat_archive_name }}{{ tomcat_archive_name_ext }}"
     dest: "{{ tomcat_home_path }}"
     remote_src: true
     group: "{{ tomcat_group }}"
@@ -156,6 +156,7 @@
     path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
+  when: tcat_gencert
   notify: restart tomcat
 
 - name: Create certificate signing request (CSR) for self-signed certificate
@@ -163,6 +164,7 @@
     privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
     common_name: "{{ tomcat_server_name | default(ansible_host) | default(inventory_hostname) }}"
     organization_name: "{{ organization_name | default('ACME Corp') }}"
+  when: tcat_gencert
   register: csr
 
 - name: Create simple self-signed certificate
@@ -173,6 +175,7 @@
     provider: selfsigned
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
+  when: tcat_gencert
   notify: restart tomcat
 
 - name: Copy Local Tomcat

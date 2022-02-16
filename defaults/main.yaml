@@ -4,6 +4,7 @@
 # This will allow the role to install Tomcat 9 before running the role, or just run the role against a host
 # tcat_install set to true will install Tomcat 9 before running, set to false will skip installing tasks
 tcat_install: true
+tcat_gencert: true
 
 # This will allow the role to create the current symlink for ART Reports version
 # This will potentially cause issues when upgrading if you need to keep the existing webapps directory contents
