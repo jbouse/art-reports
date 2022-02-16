@@ -125,6 +125,12 @@
     dest: "{{ tomcat_archive_install_path }}/conf/tomcat-users.xml"
   notify: restart tomcat
 
+- name: Create server.xml
+  template:
+    src: server.xml.j2
+    dest: "{{ tomcat_archive_install_path }}/conf/server.xml"
+  notify: restart tomcat
+
 - name: Symlink Tomcat to current version
   file:
     src: "{{ tomcat_archive_install_path }}"
@@ -144,6 +150,26 @@
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Create private key (RSA, 4096 bits)
+  openssl_privatekey:
+    path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
+  notify: restart tomcat
+
+- name: Create certificate signing request (CSR) for self-signed certificate
+  openssl_csr_pipe:
+    privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
+    common_name: "{{ tomcat_server_name | default('example.com') }}"
+    organization_name: "{{ organization_name | default('Example Corp') }}"
+  register: csr
+
+- name: Create simple self-signed certificate
+  x509_certificate:
+    path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-cert.pem"
+    csr_content: "{{ csr.csr }}"
+    privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
+    provider: selfsigned
+  notify: restart tomcat
 
 - name: Copy Local Tomcat
   block:
