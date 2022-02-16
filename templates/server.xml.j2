@@ -1,13 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Server port="8005" shutdown="SHUTDOWN">
-    <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
-    <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on"/>
-    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
-    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
-    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+<Server port="-1" shutdown="SHUTDOWN">
+    <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+    <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
 
     <GlobalNamingResources>
-        <Resource name="UserDatabase" auth="Container" type="org.apache.catalina.UserDatabase" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" pathname="conf/tomcat-users.xml"/>
+        <Resource name="UserDatabase" auth="Container"
+            type="org.apache.catalina.UserDatabase"
+            description="User database that can be updated and saved" 
+            factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+            pathname="conf/tomcat-users.xml" />
     </GlobalNamingResources>
 
     <Service name="Catalina">
@@ -15,8 +19,10 @@
             connectionTimeout="20000" server="Apache" 
             redirectPort="8443" />
 
-        <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
-           maxThreads="150" SSLEnabled="true" >
+        <Connector port="8443" protocol="HTTP/1.1"
+            secure="true" scheme="https"
+            maxThreads="150" SSLEnabled="true" 
+            SSLProtocol="TLSv1.2" >
             <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
             <SSLHostConfig>
                 <Certificate certificateKeyFile="conf/localhost-rsa-key.pem"
@@ -34,7 +40,7 @@
 
             <Realm className="org.apache.catalina.realm.LockOutRealm">
                 <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-                    resourceName="UserDatabase"/>
+                    resourceName="UserDatabase" />
             </Realm>
 
             <Host name="localhost" appBase="{{ tomcat_home_path }}/webapps"
@@ -42,13 +48,13 @@
                 <Valve className="org.apache.catalina.valves.AccessLogValve"
                     directory="logs" prefix="localhost_access_log" suffix=".txt"
                     requestAttributesEnabled="true" showServerInfo="false"
-                    pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
+                    pattern='%h %l %u %t "%r" %s %b' />
             </Host>
 
             <Valve className="org.apache.catalina.valves.AccessLogValve"
                 directory="logs" prefix="localhost_access_log" suffix=".txt" 
                 requestAttributesEnabled="true" showServerInfo="false" 
-                pattern="%h %l %u %t &quot;%r&quot; %s %b"/>
+                pattern='%h %l %u %t "%r" %s %b' />
         </Engine>
     </Service>
 </Server>

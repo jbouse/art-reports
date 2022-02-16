@@ -159,8 +159,8 @@
 - name: Create certificate signing request (CSR) for self-signed certificate
   community.crypto.openssl_csr_pipe:
     privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
-    common_name: "{{ tomcat_server_name | default('example.com') }}"
-    organization_name: "{{ organization_name | default('Example Corp') }}"
+    common_name: "{{ tomcat_server_name | default('localhost') }}"
+    organization_name: "{{ organization_name | default('ACME Corp') }}"
   register: csr
 
 - name: Create simple self-signed certificate
