@@ -9,11 +9,11 @@
       - always
 
 - name: Include Prelim Tasks
-  import_tasks: prelim.yml
+  import_tasks: prelim.yaml
   tags:
       - prelim_tasks
 
 - name: Install ART Reports
-  import_tasks: install_art_reports.yml
+  import_tasks: install_art_reports.yaml
   tags:
       - art_install
