@@ -15,7 +15,7 @@ art_version: 5.14
 art_archive_name: "art-{{ art_version }}"
 art_archive_name_ext: ".zip"
 art_redis_filename: "{{ art_archive_name }}{{ art_archive_name_ext }}"
-art_archive_url: "https://sourceforge.net/projects/art/files/art/"
+art_archive_url: "https://sourceforge.net/projects/art/files/art/{{ art_version }}"
 art_home_path: "/opt/art"
 art_archive_install_path: "{{art_home_path}}/{{art_archive_name}}"
 art_install_link: "{{art_home_path}}/current"
