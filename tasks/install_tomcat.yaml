@@ -154,12 +154,14 @@
 - name: Create private key (RSA, 4096 bits)
   community.crypto.openssl_privatekey:
     path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
   notify: restart tomcat
 
 - name: Create certificate signing request (CSR) for self-signed certificate
   community.crypto.openssl_csr_pipe:
     privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
-    common_name: "{{ tomcat_server_name | default('localhost') }}"
+    common_name: "{{ tomcat_server_name | default(ansible_host) | default(inventory_hostname) }}"
     organization_name: "{{ organization_name | default('ACME Corp') }}"
   register: csr
 
@@ -169,6 +171,8 @@
     csr_content: "{{ csr.csr }}"
     privatekey_path: "{{ tomcat_archive_install_path }}/conf/localhost-rsa-key.pem"
     provider: selfsigned
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
   notify: restart tomcat
 
 - name: Copy Local Tomcat
