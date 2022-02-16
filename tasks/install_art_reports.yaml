@@ -49,7 +49,7 @@
                 - "Alert! Not creating symlink to current version as requested or this is an upgrade"
                 - "To create execute the following command on the host:"
                 - "symlink -sfn {{ art_archive_install_path }} {{ art_install_link }}"
-        when: not art_symlink and current_art_symlink.stat.exists
+        when: not art_symlink and current_art_symlink.stat.exists and current_art_symlink.stat.lnk_target != "{{ art_archive_install_path }}"
 
 - name: Deploy ART Reports to Tomcat
   file:
