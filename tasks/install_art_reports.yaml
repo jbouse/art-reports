@@ -4,10 +4,10 @@
   register: remote_art_file
   ignore_errors: yes
 
-- name: Download and extract Tomcat to tomcat home directory
+- name: Download and extract ART Reports to ART home directory
   unarchive:
     src: "{{ art_archive_url }}/{{ art_archive_name }}{{ art_archive_name_ext }}"
-    dest: "{{ tomcat_home_path }}"
+    dest: "{{ art_home_path }}"
     remote_src: true
     group: "{{ tomcat_group }}"
     creates: "{{ art_archive_install_path }}"
@@ -30,11 +30,21 @@
   when:
     - art_symlink
 
+- name: Create ART Reports context directories for Tomcat
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ tomcat_archive_install_path }}/{{ item.path | splitext | first }}"
+    group: "{{ tomcat_group }}"
+  with_filetree: files/
+  when: item.state == 'directory'
+
 - name: Create ART Reports context file for Tomcat
   template:
-    src: art.xml.j2
-    dest: "{{ tomcat_archive_install_path }}/conf/Catalina/localhost/art.xml"
+    src: "{{ item.src }}"
+    dest: "{{ tomcat_archive_install_path }}/{{ item.path | splitext | first }}"
     group: "{{ tomcat_group }}"
+  with_filetree: files/
+  when: item.state == 'file'
 
 - name: Copy Local ART Reports
   block:
