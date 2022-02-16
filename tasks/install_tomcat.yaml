@@ -134,15 +134,14 @@
     mode: "u=rwx,g=rx,o-rx"
   with_items:
     - webapps
-    - logs
 
-- name: Grant Tomcat group read access to the conf directory
-  file:
-    path: "{{ tomcat_archive_install_path }}/conf"
-    state: directory
-    # mode: 'u=rwx,g=rwx,o=rwx'
-    mode: "g+r"
-    recurse: true
+# - name: Grant Tomcat group read access to the conf directory
+#   file:
+#     path: "{{ tomcat_archive_install_path }}/conf"
+#     state: directory
+#     # mode: 'u=rwx,g=rwx,o=rwx'
+#     mode: "g+r"
+#     recurse: true
 
 - name: Grant Tomcat group execute access to the conf directory itself
   file:
