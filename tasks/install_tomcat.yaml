@@ -114,7 +114,7 @@
     path: "{{ catalina_home_dir }}/conf/{{ item }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: "u=rw,g-rwx,o-rwx"
+    mode: "u+r-w,g-rwx,o-rwx"
   with_items:
     - catalina.properties
     - catalina.policy
