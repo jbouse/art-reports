@@ -41,7 +41,9 @@
   block:
       - name: Install Java - RHEL
         yum:
-            name: java-1.8.0-openjdk java-1.8.0-openjdk-devel 
+            name: 
+              - java-1.8.0-openjdk
+              - java-1.8.0-openjdk-devel 
             state: present
         when: ansible_distribution_file_variety == "RedHat"
 
